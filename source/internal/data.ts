@@ -25,8 +25,10 @@ export abstract class BaseStorage {
 		if (!dir.endsWith("/")) dir += "/"
 		return `${BaseStorage.__root}/${dir}`
 	}
-	protected _pathToId(path: string) {
-		return path.slice(BaseStorage.__root.length, path.length - (5 + BaseStorage.__root.length))
+	protected _pathToId(dir: string, path: string) {
+		if (dir.startsWith("/")) dir = dir.slice(1)
+		if (!dir.endsWith("/")) dir += "/"
+		return `${dir}${path.slice(0, path.lastIndexOf(".json"))}`
 	}
 	protected _pathToDir(path: string) {
 		return path.slice(BaseStorage.__root.length)
@@ -99,7 +101,7 @@ export class CacheStorage extends BaseStorage {
 	}
 	public dir(dir: string) {
 		const path = this._dirToPath(dir)
-		return [...this.__cache.keys()].map(this._pathToId).filter((id) => id.startsWith(path))
+		return [...this.__cache.keys()].map((id) => this._pathToId(dir, id)).filter((id) => id.startsWith(path))
 	}
 	public del(id: string) {
 		const path = this._idToPath(id)
@@ -125,7 +127,7 @@ export class FileStorage extends BaseStorage {
 	public async dir(dir: string) {
 		const path = this._dirToPath(dir)
 		const { result, content } = await autoCatch(FS.readdir(path, { withFileTypes: true }))
-		return result ? content!.filter((d) => d.isFile()).map((d) => this._pathToId(d.name)) : []
+		return result ? content!.filter((d) => d.isFile()).map((d) => this._pathToId(dir, d.name)) : []
 	}
 	public async del(id: string) {
 		const path = this._idToPath(id)
@@ -146,7 +148,7 @@ export class DualStorage extends BaseStorage {
 		return this.__cache.set<T>(id, data) && (await this.__file.set<T>(id, data))
 	}
 	public async dir(dir: string) {
-		return this.__cache.dir(dir).concat(...(await this.__file.dir(dir)))
+		return [...new Set([...this.__cache.dir(dir), ...(await this.__file.dir(dir))]).values()]
 	}
 	public async del(id: string) {
 		return this.__cache.del(id) && (await this.__file.del(id))
