@@ -76,6 +76,7 @@ export class Client {
 	}
 
 	private __createLogger() {
+		this._logger.store = this._localStorage.get("logger_store")!
 		this._logger.colors.create("main-i", "blue-bright")
 		this._logger.colors.create("main-w", "yellow-bright")
 		this._logger.colors.create("main-e", "red-bright")
