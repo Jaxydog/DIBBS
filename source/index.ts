@@ -17,6 +17,14 @@ export * from "./builder/component"
 export * from "./builder/embed"
 export * from "./builder/modal"
 
+export interface Config {
+	commandGuildId: string
+	intents: BitFieldResolvable<IntentsString, number>
+	timerIntervalSeconds?: number
+	token: string
+	updateGlobalCommands?: boolean
+}
+
 export class Client {
 	private readonly __storage = new DualStorage()
 	private readonly __baseTimer: Timer
@@ -26,13 +34,15 @@ export class Client {
 	protected readonly _localStorage = new CacheStorage()
 	protected readonly _logger = new Logger()
 	protected readonly _client: DiscordClient
-	protected readonly _token: string
 
-	public constructor(intents: BitFieldResolvable<IntentsString, number>, token: string) {
-		this._client = new DiscordClient({ intents })
-		this._token = token
-
+	public constructor(config: Config) {
+		this._client = new DiscordClient({ intents: config.intents })
 		this.__createLogger()
+
+		this._localStorage.set("token", config.token)
+		this._localStorage.set("cmd_guild", config.commandGuildId)
+		this._localStorage.set("cmd_global", config.updateGlobalCommands ?? false)
+		this._localStorage.set("timer_interval", config.timerIntervalSeconds ?? 30)
 
 		this.__baseTimer = new Timer(this._client, this._logger, this.__storage)
 		this.__buttonManager = new ButtonManager(this._client, this._logger, this.__storage)
@@ -57,6 +67,7 @@ export class Client {
 	}
 
 	private __createLogger() {
+		this._logger.store = false
 		this._logger.colors.create("main-i", "blue-bright")
 		this._logger.colors.create("main-w", "yellow-bright")
 		this._logger.colors.create("main-e", "red-bright")
@@ -76,13 +87,24 @@ export class Client {
 			new Rule(/.+/, "main-e")
 		)
 	}
-	public async connect(devGuildId: string, globalCommands = false) {
+	public async connect() {
 		this._client.once("ready", async () => {
 			this._logger.info(`Connected client (${this._client.user!.tag})`)
-			await this.commands.update(this._token, devGuildId, globalCommands)
+
+			await this.commands.update(
+				this._localStorage.get("token")!,
+				this._localStorage.get("cmd_guild")!,
+				this._localStorage.get("cmd_global")!
+			)
 		})
-		await this._client.login(this._token)
-		this.timer.start(30)
+
+		this.timer.queue(async ({ logger }) => {
+			logger.info(`Invoked timer callbacks`)
+		})
+
+		await this._client.login(this._localStorage.get("token")!)
+		this._localStorage.set("timer_tick", Date.now())
+		this.timer.start(this._localStorage.get("timer_interval")!)
 	}
 	public setStatus(status: PresenceStatusData) {
 		if (this._localStorage.has("status_id")) {
