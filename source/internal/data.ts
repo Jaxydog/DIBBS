@@ -30,9 +30,6 @@ export abstract class BaseStorage {
 		if (!dir.endsWith("/")) dir += "/"
 		return `${dir}${path.slice(0, path.lastIndexOf(".json"))}`
 	}
-	protected _pathToDir(path: string) {
-		return path.slice(BaseStorage.__root.length)
-	}
 
 	public abstract has(id: string): Awaitable<boolean>
 	public abstract get<T>(id: string): Awaitable<T | undefined>
