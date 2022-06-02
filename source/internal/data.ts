@@ -86,39 +86,50 @@ export class CacheStorage extends BaseStorage {
 	private readonly __cache: Map<string, unknown> = new Map()
 
 	public has(id: string) {
-		return this.__cache.has(this._idToPath(id))
+		const path = this._idToPath(id)
+		return this.__cache.has(path)
 	}
 	public get<T>(id: string) {
-		return this.__cache.get(this._idToPath(id)) as T | undefined
+		const path = this._idToPath(id)
+		return this.__cache.get(path) as T | undefined
 	}
 	public set<T>(id: string, data: T) {
-		return this.__cache.set(this._idToPath(id), data).has(this._idToPath(id))
+		const path = this._idToPath(id)
+		return this.__cache.set(path, data).has(path)
 	}
 	public dir(dir: string) {
-		return [...this.__cache.keys()].map(this._pathToId).filter((id) => id.startsWith(dir))
+		const path = this._dirToPath(dir)
+		return [...this.__cache.keys()].map(this._pathToId).filter((id) => id.startsWith(path))
 	}
 	public del(id: string) {
-		return this.__cache.delete(this._idToPath(id))
+		const path = this._idToPath(id)
+		return this.__cache.delete(path)
 	}
 }
 export class FileStorage extends BaseStorage {
 	public async has(id: string) {
-		return (await autoCatch(FS.readFile(this._idToPath(id)))).result
+		const path = this._idToPath(id)
+		return (await autoCatch(FS.readFile(path))).result
 	}
 	public async get<T>(id: string) {
-		const { result, content } = await autoCatch(FS.readFile(this._idToPath(id), { encoding: "utf8" }))
+		const path = this._idToPath(id)
+		const { result, content } = await autoCatch(FS.readFile(path, { encoding: "utf8" }))
 		if (result) return JSON.parse(content!) as T
 	}
 	public async set<T>(id: string, data: T) {
+		const path = this._idToPath(id)
 		const raw = JSON.stringify(data, null, "\t")
-		return (await autoCatch(FS.writeFile(this._idToPath(id), raw, { encoding: "utf8" }))).result
+		await autoCatch(FS.mkdir(path.slice(0, path.lastIndexOf("/"))))
+		return (await autoCatch(FS.writeFile(path, raw, { encoding: "utf8" }))).result
 	}
 	public async dir(dir: string) {
-		const { result, content } = await autoCatch(FS.readdir(this._dirToPath(dir), { withFileTypes: true }))
+		const path = this._dirToPath(dir)
+		const { result, content } = await autoCatch(FS.readdir(path, { withFileTypes: true }))
 		return result ? content!.filter((d) => d.isFile()).map((d) => this._pathToId(d.name)) : []
 	}
 	public async del(id: string) {
-		return (await autoCatch(FS.rm(this._idToPath(id)))).result
+		const path = this._idToPath(id)
+		return (await autoCatch(FS.rm(path))).result
 	}
 }
 export class DualStorage extends BaseStorage {
