@@ -1,8 +1,15 @@
 import dayjs from "dayjs"
 import Logger, { Level, Rule } from "@jaxydog/clogts"
-import { BitFieldResolvable, Client as DiscordClient, IntentsString } from "discord.js"
+import {
+	ActivityOptions,
+	BitFieldResolvable,
+	Client as DiscordClient,
+	ClientEvents,
+	IntentsString,
+	PresenceStatusData,
+} from "discord.js"
 import { ButtonManager, CommandManager, ModalManager } from "./utils/action"
-import { DualStorage } from "./internal/data"
+import { CacheStorage, DualStorage } from "./internal/data"
 import { Timer } from "./internal/timer"
 
 export * from "./builder/button"
@@ -16,6 +23,7 @@ export class Client {
 	private readonly __buttonManager: ButtonManager
 	private readonly __commandManager: CommandManager
 	private readonly __modalManager: ModalManager
+	protected readonly _localStorage = new CacheStorage()
 	protected readonly _logger = new Logger()
 	protected readonly _client: DiscordClient
 	protected readonly _token: string
@@ -74,5 +82,49 @@ export class Client {
 			await this.commands.update(this._token, devGuildId, globalCommands)
 		})
 		await this._client.login(this._token)
+	}
+	public setStatus(status: PresenceStatusData) {
+		if (this._localStorage.has("status_id")) {
+			this.timer.remove(this._localStorage.get("status_id")!)
+		}
+
+		this._localStorage.set("status_val", status)
+
+		const timerId = this.timer.queue(async ({ client }) => {
+			if (client.user?.presence.status !== status) {
+				client.user?.setStatus(this._localStorage.get("status_val") ?? "online")
+			}
+		})
+
+		this._localStorage.set("status_id", timerId)
+	}
+	public setActivity(activity: ActivityOptions) {
+		if (this._localStorage.has("activity_id")) {
+			this.timer.remove(this._localStorage.get("activity_id")!)
+		}
+
+		this._localStorage.set("activity_val", activity)
+
+		const timerId = this.timer.queue(async ({ client }) => {
+			if (client.user?.presence.activities[0] !== activity) {
+				client.user?.setActivity(this._localStorage.get("activity_val"))
+			}
+		})
+
+		this._localStorage.set("activity_id", timerId)
+	}
+	public onEvent<E extends keyof ClientEvents>(event: E, callback: (...args: ClientEvents[E]) => Promise<void>) {
+		if (this._localStorage.has(`event_${event}_callback`)) {
+			this._client.off(event, this._localStorage.get(`event_${event}_callback`)!)
+		}
+
+		this._client.on(event, callback)
+		this._localStorage.set(`event_${event}_callback`, callback)
+	}
+	public offEvent(event: keyof ClientEvents) {
+		if (this._localStorage.has(`event_${event}_callback`)) {
+			this._client.off(event, this._localStorage.get(`event_${event}_callback`)!)
+			this._localStorage.del(`event_${event}_callback`)
+		}
 	}
 }
