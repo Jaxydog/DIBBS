@@ -111,10 +111,6 @@ export class Client {
 			)
 		})
 
-		this.timer.queue(async ({ logger }) => {
-			logger.info(`Invoked timer callbacks`)
-		})
-
 		await this._client.login(this._localStorage.get("token")!)
 		this._localStorage.set("timer_tick", Date.now())
 		this.timer.start(this._localStorage.get("timer_interval")!)
