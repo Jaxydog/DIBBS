@@ -43,6 +43,9 @@ export class Timer {
 		this.__list.set(id, callback)
 		return id
 	}
+	public remove(id: symbol) {
+		return this.__list.delete(id)
+	}
 	public invoke() {
 		for (const callback of this.__list.values()) {
 			autoCatch(
