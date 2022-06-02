@@ -6,7 +6,6 @@
 		"checkJs": true,
 		"declaration": true,
 		"esModuleInterop": true,
-		"exactOptionalPropertyTypes": true,
 		"module": "CommonJS",
 		"moduleResolution": "Node",
 		"noFallthroughCasesInSwitch": true,
