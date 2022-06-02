@@ -22,7 +22,7 @@ export class Timer {
 	protected readonly _client: Client
 	protected readonly _logger: Logger
 	protected readonly _storage: BaseStorage
-	private __list: Map<symbol, Callback> = new Map()
+	protected readonly _list: Map<symbol, Callback> = new Map()
 	private __interval?: NodeJS.Timer
 
 	public constructor(client: Client, logger: Logger, storage: BaseStorage) {
@@ -33,21 +33,21 @@ export class Timer {
 
 	public start(seconds: number) {
 		this.cancel()
-		this.__interval = setInterval(this.invoke, seconds * 1000)
+		this.__interval = setInterval(() => this.invoke(), seconds * 1000)
 	}
 	public cancel() {
 		clearInterval(this.__interval)
 	}
 	public queue(callback: Callback) {
 		const id = Symbol()
-		this.__list.set(id, callback)
+		this._list.set(id, callback)
 		return id
 	}
 	public remove(id: symbol) {
-		return this.__list.delete(id)
+		return this._list.delete(id)
 	}
 	public invoke() {
-		for (const callback of this.__list.values()) {
+		for (const callback of [...this._list.values()]) {
 			autoCatch(
 				callback({
 					client: this._client,
