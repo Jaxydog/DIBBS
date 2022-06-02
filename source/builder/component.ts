@@ -10,8 +10,8 @@ export class ComponentBuilder {
 		return this.build().length
 	}
 
-	public add(...components: MessageActionRowComponentResolvable[]) {
-		this.__list.push(...components)
+	public component(component: MessageActionRowComponentResolvable) {
+		this.__list.push(component)
 		return this
 	}
 	public build(): MessageActionRow[] {
