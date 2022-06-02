@@ -68,9 +68,10 @@ export class Client {
 			new Rule(/.+/, "main-e")
 		)
 	}
-	public async connect() {
+	public async connect(devGuildId: string, globalCommands = false) {
 		this._client.once("ready", async () => {
 			this._logger.info(`Connected client (${this._client.user!.tag})`)
+			await this.commands.update(this._token, devGuildId, globalCommands)
 		})
 		await this._client.login(this._token)
 	}

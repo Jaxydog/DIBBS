@@ -41,7 +41,7 @@ export class CommandManager extends DefinedActionManager<CommandInteraction, App
 				this._logger.info(`Refreshed ${body.length} global commands`)
 			}
 		} catch (error) {
-			this._logger.warn(`Unable to refresh commands: ${error}`)
+			this._logger.warn(`Unable to refresh commands\n\t${error}`)
 		}
 	}
 }
