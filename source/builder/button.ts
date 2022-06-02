@@ -3,24 +3,27 @@ import { MessageButton, MessageButtonStyleResolvable } from "discord.js"
 export class ButtonBuilder {
 	private __button: MessageButton = new MessageButton()
 
-	public setId(id: string) {
+	public id(id: string) {
 		this.__button.setCustomId(id)
 		return this
 	}
-	public setLabel(label: string) {
+	public label(label: string) {
 		this.__button.setLabel(label)
 		return this
 	}
-	public setEmoji(emoji: string) {
+	public emoji(emoji: string) {
 		this.__button.setEmoji(emoji)
 		return this
 	}
-	public setStyle(style: MessageButtonStyleResolvable) {
+	public style(style: MessageButtonStyleResolvable) {
 		this.__button.setStyle(style)
 		return this
 	}
-	public setUrl(url: string) {
+	public url(url: string) {
 		this.__button.setURL(url)
 		return this
+	}
+	public build() {
+		return this.__button
 	}
 }

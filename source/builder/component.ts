@@ -12,6 +12,7 @@ export class ComponentBuilder {
 
 	public add(...components: MessageActionRowComponentResolvable[]) {
 		this.__list.push(...components)
+		return this
 	}
 	public build(): MessageActionRow[] {
 		const rows: MessageActionRow[] = []

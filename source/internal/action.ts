@@ -2,9 +2,9 @@ import Logger from "@jaxydog/clogts"
 import { Client, Interaction } from "discord.js"
 import { BaseStorage } from "./data"
 
-export type Callback<I extends Interaction> = (args: Args<I>) => Promise<void>
+export type ActionCallback<I extends Interaction> = (args: ActionArgs<I>) => Promise<void>
 
-export interface Args<I extends Interaction> {
+export interface ActionArgs<I extends Interaction> {
 	readonly client: Client
 	readonly interact: I
 	readonly logger: Logger
@@ -15,7 +15,7 @@ export abstract class ActionManager<I extends Interaction> {
 	protected readonly _client: Client
 	protected readonly _logger: Logger
 	protected readonly _storage: BaseStorage
-	protected readonly _list: Map<string, Callback<I>> = new Map()
+	protected readonly _list: Map<string, ActionCallback<I>> = new Map()
 
 	public constructor(client: Client, logger: Logger, storage: BaseStorage) {
 		this._client = client
@@ -26,7 +26,7 @@ export abstract class ActionManager<I extends Interaction> {
 
 	protected abstract _createListener(): void
 
-	public create(name: string, callback: Callback<I>) {
+	public create(name: string, callback: ActionCallback<I>) {
 		if (this.exists(name)) this.delete(name)
 		this._list.set(name, callback)
 		return this
@@ -67,7 +67,7 @@ export abstract class DefinedActionManager<I extends Interaction, D> extends Act
 		return this._data.get(name)
 	}
 
-	public override create(name: string, callback: Callback<I>) {
+	public override create(name: string, callback: ActionCallback<I>) {
 		if (this._data.has(name)) {
 			super.create(name, callback)
 		} else {

@@ -10,9 +10,9 @@ async function autoCatch<T>(promise: Promise<T>) {
 	}
 }
 
-export type Callback = (args: Args) => Promise<void>
+export type TimerCallback = (args: TimerArgs) => Promise<void>
 
-export interface Args {
+export interface TimerArgs {
 	readonly client: Client
 	readonly logger: Logger
 	readonly storage: BaseStorage
@@ -22,7 +22,7 @@ export class Timer {
 	protected readonly _client: Client
 	protected readonly _logger: Logger
 	protected readonly _storage: BaseStorage
-	protected readonly _list: Map<symbol, Callback> = new Map()
+	protected readonly _list: Map<symbol, TimerCallback> = new Map()
 	private __interval?: NodeJS.Timer
 
 	public constructor(client: Client, logger: Logger, storage: BaseStorage) {
@@ -38,7 +38,7 @@ export class Timer {
 	public cancel() {
 		clearInterval(this.__interval)
 	}
-	public queue(callback: Callback) {
+	public queue(callback: TimerCallback) {
 		const id = Symbol()
 		this._list.set(id, callback)
 		return id
