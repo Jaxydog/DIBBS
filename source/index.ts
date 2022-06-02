@@ -53,8 +53,14 @@ export class Client {
 	public get buttons() {
 		return this.__buttonManager
 	}
+	public get client() {
+		return this._client
+	}
 	public get commands() {
 		return this.__commandManager
+	}
+	public get logger() {
+		return this._logger
 	}
 	public get modals() {
 		return this.__modalManager
