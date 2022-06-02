@@ -1,6 +1,6 @@
 # DIBBS
 
-> _Discord Bot Backup Service!_
+> _Discord Bot Backend System!_
 
 DIBBS is a wrapper for [discord.js](https://github.com/discordjs/discord.js) that helps make simple things like creating slash commands a whole lot easier.
 

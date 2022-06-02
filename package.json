@@ -1,7 +1,7 @@
 {
 	"name": "@jaxydog/dibbs",
-	"version": "1.0.0",
-	"description": "Discord bot backend system",
+	"version": "1.0.1",
+	"description": "Discord Bot Backend System",
 	"author": "Jaxydog",
 	"main": "library/index.js",
 	"types": "library/index.d.ts",
