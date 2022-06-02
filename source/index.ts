@@ -82,6 +82,7 @@ export class Client {
 			await this.commands.update(this._token, devGuildId, globalCommands)
 		})
 		await this._client.login(this._token)
+		this.timer.start(30)
 	}
 	public setStatus(status: PresenceStatusData) {
 		if (this._localStorage.has("status_id")) {
