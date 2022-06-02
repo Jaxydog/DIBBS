@@ -136,7 +136,7 @@ export class DualStorage extends BaseStorage {
 	private __file = new FileStorage()
 
 	public async has(id: string) {
-		return this.__cache.has(id) && (await this.__file.has(id))
+		return this.__cache.has(id) || (await this.__file.has(id))
 	}
 	public async get<T>(id: string) {
 		return this.__cache.has(id) ? this.__cache.get<T>(id) : await this.__file.get<T>(id)
