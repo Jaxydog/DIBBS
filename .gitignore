@@ -1,5 +1,6 @@
+data/
 example/
-node_modules/
-resource/
 library/
 logs/
+node_modules/
+resource/
