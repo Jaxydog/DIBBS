@@ -8,9 +8,9 @@ import {
 } from "discord.js"
 import { ButtonBuilder } from "../builder/button"
 import { ModalBuilder } from "../builder/modal"
-import { DefinedActionManager } from "../internal/action"
+import { ActionManager, DefinedActionManager } from "../internal/action"
 
-export class ButtonManager extends DefinedActionManager<ButtonInteraction, ButtonBuilder> {
+export class ButtonManager extends ActionManager<ButtonInteraction> {
 	protected _createListener() {
 		this._client.on("interactionCreate", (interact) => {
 			if (interact.isButton() && this.exists(interact.customId)) {
@@ -45,7 +45,7 @@ export class CommandManager extends DefinedActionManager<CommandInteraction, App
 		}
 	}
 }
-export class ModalManager extends DefinedActionManager<ModalSubmitInteraction, ModalBuilder> {
+export class ModalManager extends ActionManager<ModalSubmitInteraction> {
 	protected _createListener() {
 		this._client.on("interactionCreate", (interact) => {
 			if (interact.isModalSubmit() && this.exists(interact.customId)) {
