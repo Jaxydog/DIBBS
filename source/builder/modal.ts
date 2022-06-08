@@ -2,14 +2,13 @@ import {
 	MessageActionRow,
 	Modal,
 	ModalActionRowComponent,
-	ModalActionRowComponentResolvable,
 	TextInputComponent,
 	TextInputStyleResolvable,
 } from "discord.js"
 
 export class ModalBuilder {
 	private __modal: Modal = new Modal()
-	private __row = new MessageActionRow<ModalActionRowComponent>()
+	private __rows: MessageActionRow<ModalActionRowComponent>[] = []
 
 	public id(id: string) {
 		this.__modal.setCustomId(id)
@@ -19,14 +18,15 @@ export class ModalBuilder {
 		this.__modal.setTitle(title)
 		return this
 	}
-	public field(field: ModalActionRowComponentResolvable) {
-		if (this.__row.components.length < 5) {
-			this.__row.addComponents(field)
+	public field(field: ModalActionRowComponent) {
+		if (this.__rows.length < 5) {
+			const row = new MessageActionRow<ModalActionRowComponent>().addComponents(field)
+			this.__rows.push(row)
 		}
 		return this
 	}
 	public build() {
-		this.__modal.setComponents(this.__row)
+		this.__modal.addComponents(...this.__rows)
 		return this.__modal
 	}
 }
