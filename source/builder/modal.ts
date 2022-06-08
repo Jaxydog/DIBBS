@@ -10,6 +10,13 @@ export class ModalBuilder {
 	private __modal: Modal = new Modal()
 	private __rows: MessageActionRow<ModalActionRowComponent>[] = []
 
+	public static from(modal: Modal, ...rows: MessageActionRow<ModalActionRowComponent>[]) {
+		const builder = new ModalBuilder()
+		builder.__modal = modal
+		builder.__rows = rows.slice(0, 4)
+		return builder
+	}
+
 	public id(id: string) {
 		this.__modal.setCustomId(id)
 		return this
@@ -25,6 +32,9 @@ export class ModalBuilder {
 		}
 		return this
 	}
+	public clone() {
+		return ModalBuilder.from(this.__modal, ...this.__rows)
+	}
 	public build() {
 		this.__modal.addComponents(...this.__rows)
 		return this.__modal
@@ -32,6 +42,12 @@ export class ModalBuilder {
 }
 export class ModalFieldBuilder {
 	private __field = new TextInputComponent()
+
+	public static from(field: TextInputComponent) {
+		const builder = new ModalFieldBuilder()
+		builder.__field = field
+		return builder
+	}
 
 	public id(id: string) {
 		this.__field.setCustomId(id)
@@ -61,6 +77,9 @@ export class ModalFieldBuilder {
 	public required(required = true) {
 		this.__field.setRequired(required)
 		return this
+	}
+	public clone() {
+		return ModalFieldBuilder.from(this.__field)
 	}
 	public build() {
 		return this.__field

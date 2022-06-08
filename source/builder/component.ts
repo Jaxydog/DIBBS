@@ -10,9 +10,18 @@ export class ComponentBuilder {
 		return this.build().length
 	}
 
+	public static from(...rows: MessageActionRowComponentResolvable[]) {
+		const builder = new ComponentBuilder()
+		builder.__list = rows
+		return builder
+	}
+
 	public component(component: MessageActionRowComponentResolvable) {
 		this.__list.push(component)
 		return this
+	}
+	public clone() {
+		return ComponentBuilder.from(...this.__list)
 	}
 	public build(): MessageActionRow[] {
 		const rows: MessageActionRow[] = []

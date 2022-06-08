@@ -3,6 +3,12 @@ import { ColorResolvable, EmbedFieldData, MessageEmbed } from "discord.js"
 export class EmbedBuilder {
 	private __embed = new MessageEmbed()
 
+	public static from(embed: MessageEmbed) {
+		const builder = new EmbedBuilder()
+		builder.__embed = embed
+		return builder
+	}
+
 	public author(name: string, iconURL?: string, url?: string) {
 		this.__embed.setAuthor({ name, iconURL, url })
 		return this
@@ -42,6 +48,9 @@ export class EmbedBuilder {
 	public url(url: string) {
 		this.__embed.setURL(url)
 		return this
+	}
+	public clone() {
+		return EmbedBuilder.from(this.__embed)
 	}
 	public build() {
 		return this.__embed
