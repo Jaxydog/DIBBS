@@ -21,6 +21,10 @@ export class ModalBuilder {
 		this.__modal.setCustomId(id)
 		return this
 	}
+	public dataId(id: string, data: string) {
+		this.__modal.setCustomId(`${id};${data}`)
+		return this
+	}
 	public title(title: string) {
 		this.__modal.setTitle(title)
 		return this

@@ -6,8 +6,6 @@ import {
 	CommandInteraction,
 	ModalSubmitInteraction,
 } from "discord.js"
-import { ButtonBuilder } from "../builder/button"
-import { ModalBuilder } from "../builder/modal"
 import { ActionManager, DefinedActionManager } from "../internal/action"
 
 export class ButtonManager extends ActionManager<ButtonInteraction> {

@@ -13,6 +13,10 @@ export class ButtonBuilder {
 		this.__button.setCustomId(id)
 		return this
 	}
+	public dataId(id: string, data: string) {
+		this.__button.setCustomId(`${id};${data}`)
+		return this
+	}
 	public label(label: string) {
 		this.__button.setLabel(label)
 		return this
