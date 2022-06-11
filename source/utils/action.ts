@@ -12,7 +12,8 @@ export class ButtonManager extends ActionManager<ButtonInteraction> {
 	protected _createListener() {
 		this._client.on("interactionCreate", (interact) => {
 			if (interact.isButton() && this.exists(interact.customId)) {
-				this.invoke(interact.customId, interact)
+				const dataId = interact.customId.includes(";")
+				this.invoke(interact.customId, interact, dataId)
 			}
 		})
 	}
@@ -47,7 +48,8 @@ export class ModalManager extends ActionManager<ModalSubmitInteraction> {
 	protected _createListener() {
 		this._client.on("interactionCreate", (interact) => {
 			if (interact.isModalSubmit() && this.exists(interact.customId)) {
-				this.invoke(interact.customId, interact)
+				const dataId = interact.customId.includes(";")
+				this.invoke(interact.customId, interact, dataId)
 			}
 		})
 	}
