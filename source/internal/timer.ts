@@ -46,15 +46,17 @@ export class Timer {
 	public remove(id: symbol) {
 		return this._list.delete(id)
 	}
-	public invoke() {
+	public async invoke() {
 		for (const callback of [...this._list.values()]) {
-			autoCatch(
-				callback({
-					client: this._client,
-					logger: this._logger,
-					storage: this._storage,
-				})
-			)
+			try {
+				await autoCatch(
+					callback({
+						client: this._client,
+						logger: this._logger,
+						storage: this._storage,
+					})
+				)
+			} catch {}
 		}
 	}
 }
