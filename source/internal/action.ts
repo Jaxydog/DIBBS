@@ -9,7 +9,7 @@ export interface ActionArgs<I extends Interaction> {
 	readonly interact: I
 	readonly logger: Logger
 	readonly storage: BaseStorage
-	readonly data?: string
+	readonly data?: string[]
 }
 
 export abstract class ActionManager<I extends Interaction> {
@@ -49,6 +49,7 @@ export abstract class ActionManager<I extends Interaction> {
 			interact,
 			logger: this._logger,
 			storage: this._storage,
+			data: dataId ? name.split(";").slice(1) : undefined,
 		}
 
 		if (this.exists(name, dataId)) {
