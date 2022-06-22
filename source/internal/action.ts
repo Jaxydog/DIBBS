@@ -42,7 +42,7 @@ export abstract class ActionManager<I extends Interaction> {
 		return this._list.delete(name)
 	}
 	public async invoke(name: string, interact: I, dataId = false) {
-		if (dataId) name = name.split(";")[0]!
+		const rawName = dataId ? name.split(";")[0]! : name
 
 		const args: ActionArgs<I> = {
 			client: this._client,
@@ -52,16 +52,16 @@ export abstract class ActionManager<I extends Interaction> {
 			data: dataId ? name.split(";").slice(1) : undefined,
 		}
 
-		if (this.exists(name, dataId)) {
+		if (this.exists(rawName, dataId)) {
 			try {
-				const callback = this._list.get(name)!
+				const callback = this._list.get(rawName)!
 				await callback(args)
-				this._logger.info(`Invoked action: ${name}`)
+				this._logger.info(`Invoked action: ${rawName}`)
 			} catch (error) {
-				this._logger.error(`Error invoking action: ${name}\n\t${error}`)
+				this._logger.error(`Error invoking action: ${rawName}\n\t${error}`)
 			}
 		} else {
-			this._logger.warn(`Missing action implementation: ${name}`)
+			this._logger.warn(`Missing action implementation: ${rawName}`)
 		}
 	}
 }
