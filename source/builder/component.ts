@@ -17,6 +17,7 @@ export class ComponentBuilder {
 	}
 
 	public component(component: MessageActionRowComponentResolvable) {
+		this.__list ??= []
 		this.__list.push(component)
 		return this
 	}
