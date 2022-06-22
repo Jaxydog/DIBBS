@@ -11,9 +11,14 @@ import { ActionManager, DefinedActionManager } from "../internal/action"
 export class ButtonManager extends ActionManager<ButtonInteraction> {
 	protected _createListener() {
 		this._client.on("interactionCreate", (interact) => {
-			if (interact.isButton() && this.exists(interact.customId)) {
+			if (interact.isButton()) {
 				const dataId = interact.customId.includes(";")
-				this.invoke(interact.customId, interact, dataId)
+
+				if (this.exists(interact.customId, dataId)) {
+					this.invoke(interact.customId, interact, dataId)
+				} else {
+					this._logger.warn(`Invalid button: ${interact.customId}`)
+				}
 			}
 		})
 	}
@@ -47,9 +52,14 @@ export class CommandManager extends DefinedActionManager<CommandInteraction, App
 export class ModalManager extends ActionManager<ModalSubmitInteraction> {
 	protected _createListener() {
 		this._client.on("interactionCreate", (interact) => {
-			if (interact.isModalSubmit() && this.exists(interact.customId)) {
+			if (interact.isModalSubmit()) {
 				const dataId = interact.customId.includes(";")
-				this.invoke(interact.customId, interact, dataId)
+
+				if (this.exists(interact.customId, dataId)) {
+					this.invoke(interact.customId, interact, dataId)
+				} else {
+					this._logger.warn(`Invalid modal: ${interact.customId}`)
+				}
 			}
 		})
 	}
