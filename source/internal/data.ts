@@ -118,11 +118,11 @@ export class FileStorage extends BaseStorage {
 	public async get<T>(id: string, ext = BaseStorage.defaultExt) {
 		const path = this._idToPath(id, ext)
 		const { result, content } = await autoCatch(FS.readFile(path, { encoding: "utf8" }))
-		if (result) return JSON.parse(content!) as T
+		if (result) return ext === "json" ? (JSON.parse(content) as T) : (content as unknown as T)
 	}
 	public async set<T>(id: string, data: T, ext = BaseStorage.defaultExt) {
 		const path = this._idToPath(id, ext)
-		const raw = JSON.stringify(data, null, "\t")
+		const raw = ext === "json" ? JSON.stringify(data, null, "\t") : `${data}`
 		await autoCatch(FS.mkdir(path.slice(0, path.lastIndexOf("/"))))
 		return (await autoCatch(FS.writeFile(path, raw, { encoding: "utf8" }))).result
 	}
